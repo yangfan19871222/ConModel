@@ -1,0 +1,39 @@
+1 模型功能和结构
+  模型主要完成人脸检测，人脸属性分析，属性包括年龄，性别，颜值，表情
+  人脸检测采用的框架是级联cnn，由三层级联卷积网组成，分别在文件夹stage1,stage2,stage3下面
+  人脸属性由每个cnn完成一个属性分析，文件夹stage4_attractive stage4_attractive_small 对应颜值分析
+  stage4_smile对应表情分析，stage4_gender_attractive对应性别分析，stage5对应年龄分析
+
+2 模型使用步骤
+  make
+  模型提供了python 接口，具体使用方法参考test_with_reg/get_id_ip.py中的代码
+
+3 文件夹结构
+  lib/ 放了mxnet的动态链接库
+  python/ 放了mxnet的python接口
+  nms/ 放置了nms的gpu和cpu实现优化代码
+  stage1/ 存放了人脸检测stage1的模型参数和模型结构
+  stage2/ 存放了人脸检测stage2的模型参数和模型结构
+  stage3/ 存放了人脸检测stage3的模型参数和模型结构
+  人脸检测的模型参数是基于线上数据训练的，效果比基于wider face模型要好(基于wider face模型在fddb上100错误时90%召回率)，具体指标在后期会加上（指标待做）
+  stage4_gender_attractive/ 存放了人脸属性的性别分析模型参数和模型结构
+  stage4_attractive/ 存放了人脸属性的颜值分析模型参数和模型结构
+  stage4_attractive_small/ 存放了模糊情况下的人脸属性的颜值分析模型参数和模型结构
+  stage4_smile/ 存放了人脸属性的表情分析模型参数和模型结构
+  stage5/ 存放了人脸年龄的模型参数和模型结构
+  人脸属性模型参数是基于百度的数据训练，在celeba数据集上，性别准确率93～94左右，smile 86%左右，颜值效果一般，有待评估。
+
+4 训练数据
+  标签数据：
+  /media/disk1/yangfan/online_data_1000w_new/mtcnn_training
+  图像数据：
+  /media/mfs/fordata/td_hg2_web_server/yangfan/online_data_1000w_training/
+ 
+
+5 人脸检测模型
+  检测模型分别在stage1, stage2, stage3三个文件夹下面, 模型的结构是一样的，训练结果不同
+  wider_faces_based_model/  是基于wider faces 数据训练的模型
+  mtcnn* 是基于online数据训练的， [0.5， 0.5， 0.6] 在fddb上测试时，错误是100时，召回率是0.72，错误是50时，召回率是0.66
+  mtcnn_online_new 是基于online数据的优化，[0.5, 0.5, 0.7]在fddb上测试时，错误是100时，召回率是0.85，错误是50时，召回率是0.82
+  通过线上数据测试表明，基于online数据训练的模型虽然在fddb上测试结果不如wider faces数据的训练模型，但是线上数据表现更好
+
